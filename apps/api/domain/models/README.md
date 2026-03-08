@@ -202,7 +202,7 @@ from domain.models import (
 ```
 ## Maintenance notes
 
-  - When changing this package:
+  When changing this package:
 
   - preserve stable enum ordering unless a migration is intentional
 
