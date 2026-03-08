@@ -191,7 +191,7 @@ This package models structure and meaning. It does not make medical decisions.
 Prefer importing from the package root when possible:
 
 ```python
-from api.domain.models import (
+from domain.models import (
     Symptom,
     CyclePhase,
     CycleBaseline,
