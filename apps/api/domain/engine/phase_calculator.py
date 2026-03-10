@@ -165,8 +165,7 @@ class PhaseCalculator:
         Calculate phase results for multiple dates at once.
 
         Returns a dict mapping each date to its PhaseResult.
-        More efficient than calling calculate() in a loop when
-        processing large batches of logs.
+        Convenience helper for working with batches of dates.
         """
         return {d: self.calculate(baseline, d) for d in dates}
 
@@ -189,7 +188,7 @@ class PhaseCalculator:
             return {}
 
         luteal_start = cycle_length - LUTEAL_DURATION + 1
-        ovulatory_start = luteal_start - OVULATORY_DURATION
+        ovulatory_start = max(luteal_start - OVULATORY_DURATION, MENSTRUAL_END_DAY + 1)
         follicular_start = MENSTRUAL_END_DAY + 1
         follicular_end = ovulatory_start - 1
 

@@ -56,7 +56,7 @@ Design note on honest uncertainty:
 from __future__ import annotations
 
 from collections import Counter, defaultdict
-from datetime import datetime
+from datetime import datetime, timedelta
 from uuid import uuid4
 
 from domain.models.cycle import CyclePhase, Score
@@ -125,9 +125,9 @@ class PatternEngine:
         Returns None if there are not enough logs to produce
         a meaningful result (fewer than MIN_LOGS_FOR_PATTERN).
 
-        Logs should be sorted by logged_date ascending before
-        passing to this method. The engine does not re-sort —
-        sort order matters for trend detection.
+        Logs do not need to be pre-sorted. The engine sorts
+        internally by logged_date ascending before any analysis.
+        Sort order matters for trend detection.
         """
         if len(logs) < MIN_LOGS_FOR_PATTERN:
             return None
@@ -202,7 +202,8 @@ class PatternEngine:
         where pain >= ONSET_THRESHOLD. Collect those cycle days
         and return (min, max) as the onset range.
 
-        Falls back to (1, len(logs)) if no onset days are found.
+        Falls back to the full observed cycle day range
+        (min and max cycle_day across all logs) if no onset days are found.
         """
         onset_days: list[int] = []
 
@@ -556,7 +557,7 @@ class PatternEngine:
             log_by_date = {l.logged_date: l for l in logs}
 
             for log in high_pain_logs:
-                prev_date = log.logged_date - __import__("datetime").timedelta(days=1)
+                prev_date = log.logged_date - timedelta(days=1)
                 prev_log = log_by_date.get(prev_date)
                 if prev_log and prev_log.energy_level.is_low():
                     low_energy_before_pain += 1
@@ -570,7 +571,7 @@ class PatternEngine:
         # Consistency fallback — always honest, never fabricated
         if len(logs) >= MIN_LOGS_FOR_FEEDBACK:
             return (
-                f"You've logged {len(logs)} days in a row. "
+                f"You've logged {len(logs)} days so far. "
                 "That's building a clearer picture.",
                 None,
             )
