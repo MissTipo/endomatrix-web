@@ -10,7 +10,6 @@ This is the value of the ports pattern — the contract is explicit
 and machine-verifiable.
 """
 
-import pytest
 from datetime import date, datetime, timedelta
 from uuid import uuid4
 
@@ -139,6 +138,17 @@ class TestLogRepositoryContract:
             self.repo.save(make_log(self.user_id, date.today() - timedelta(days=i)))
         logs = self.repo.get_logs_for_user(self.user_id, limit=3)
         assert len(logs) == 3
+
+    def test_get_logs_for_user_respects_offset(self):
+        for i in range(5):
+            self.repo.save(make_log(self.user_id, date.today() - timedelta(days=i)))
+        logs = self.repo.get_logs_for_user(self.user_id, limit=10, offset=2)
+        assert len(logs) == 3
+        # Results are ordered descending, so offset=2 skips the two most recent
+        expected_first_date = date.today() - timedelta(days=2)
+        assert logs[0].logged_date == expected_first_date
+        dates = [l.logged_date for l in logs]
+        assert dates == sorted(dates, reverse=True)
 
     def test_get_logs_for_user_excludes_other_users(self):
         other_user = uuid4()
@@ -307,6 +317,16 @@ class TestPatternRepositoryContract:
         for _ in range(3):
             self.repo.save_pattern(make_pattern(self.user_id))
         assert self.repo.count_patterns(self.user_id) == 3
+
+    def test_get_pattern_by_id_returns_pattern_when_found(self):
+        pattern = make_pattern(self.user_id)
+        self.repo.save_pattern(pattern)
+        result = self.repo.get_pattern_by_id(pattern.id)
+        assert result == pattern
+
+    def test_get_pattern_by_id_returns_none_when_not_found(self):
+        result = self.repo.get_pattern_by_id(uuid4())
+        assert result is None
 
     def test_save_and_retrieve_latest_feedback(self):
         fb = EarlyFeedback(
