@@ -111,7 +111,7 @@ class InMemoryLogRepository(ILogRepository):
         logs = self.get_logs_for_user(user_id, limit=1)
         return logs[0] if logs else None
 
-    def _active_logs(self):
+    def _active_logs(self) -> list[DailyLog]:
         return [l for l in self._logs.values() if l.id not in self._superseded]
 
 
