@@ -37,6 +37,14 @@ async def lookup_error_handler(request: Request, exc: LookupError) -> JSONRespon
     )
 
 
+async def not_implemented_handler(request: Request, exc: NotImplementedError) -> JSONResponse:
+    logger.error("NotImplementedError on %s %s", request.method, request.url.path)
+    return JSONResponse(
+        status_code=501,
+        content={"detail": "This feature is not yet implemented."},
+    )
+
+
 async def unhandled_error_handler(request: Request, exc: Exception) -> JSONResponse:
     logger.exception("Unhandled error on %s %s", request.method, request.url.path)
     return JSONResponse(

@@ -19,10 +19,7 @@ What we are testing:
 from __future__ import annotations
 
 import uuid
-from datetime import date, datetime
-from unittest.mock import MagicMock, patch
-
-import pytest
+from datetime import date, datetime, timedelta
 
 from application.use_cases import (
     GeneratePatternResult,
@@ -52,13 +49,13 @@ def _make_log(
     return DailyLog(
         id=uuid.uuid4(),
         user_id=USER_ID,
-        logged_date=date(2026, 3, 11),
+        logged_date=date.today(),
         pain_level=Score(pain_level),
         energy_level=Score(energy_level),
         dominant_symptom=Symptom.PELVIC_PAIN,
         cycle_day=14,
         cycle_phase=CyclePhase.LUTEAL,
-        created_at=datetime(2026, 3, 11, 9, 0, 0),
+        created_at=datetime.utcnow(),
     )
 
 
@@ -85,7 +82,7 @@ def _pattern_result(*, was_generated: bool = True) -> GeneratePatternResult:
 
 
 VALID_BODY = {
-    "logged_date": "2026-03-11",
+    "logged_date": date.today().isoformat(),
     "pain_level": 6,
     "energy_level": 4,
     "dominant_symptom": "pelvic_pain",
@@ -118,7 +115,7 @@ class TestSubmitLog:
         body = resp.json()
 
         assert "log_id" in body
-        assert body["logged_date"] == "2026-03-11"
+        assert body["logged_date"] == date.today().isoformat()
         assert body["cycle_day"] == 14
         assert body["cycle_phase"] == CyclePhase.LUTEAL.display_name
         assert body["pain_level"] == 6

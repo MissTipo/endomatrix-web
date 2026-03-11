@@ -18,6 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from presentation.errors import (
     lookup_error_handler,
+    not_implemented_handler,
     unhandled_error_handler,
     value_error_handler,
 )
@@ -58,6 +59,7 @@ def create_app() -> FastAPI:
     app.add_exception_handler(ValueError, value_error_handler)
     app.add_exception_handler(KeyError, lookup_error_handler)
     app.add_exception_handler(LookupError, lookup_error_handler)
+    app.add_exception_handler(NotImplementedError, not_implemented_handler)
     app.add_exception_handler(Exception, unhandled_error_handler)
 
     # Routers

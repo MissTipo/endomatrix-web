@@ -22,9 +22,6 @@ from __future__ import annotations
 
 import uuid
 from datetime import date, datetime
-from unittest.mock import MagicMock
-
-import pytest
 
 from application.use_cases import (
     GeneratePatternResult,

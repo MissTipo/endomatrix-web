@@ -6,7 +6,7 @@ Pydantic request and response models for daily log endpoints.
 
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date
 from typing import Optional
 from uuid import UUID
 
@@ -21,7 +21,8 @@ from domain.models.symptom import Symptom
 
 class LogDailyEntryRequest(BaseModel):
     logged_date: date = Field(
-        description="The calendar date this log represents. Defaults to today if omitted."
+        default_factory=date.today,
+        description="The calendar date this log represents. Defaults to today if omitted.",
     )
     pain_level: int = Field(ge=0, le=10, description="Pain intensity, 0–10.")
     energy_level: int = Field(ge=0, le=10, description="Energy level, 0–10. Higher = more energy.")

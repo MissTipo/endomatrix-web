@@ -13,8 +13,6 @@ What we are testing:
 
 from __future__ import annotations
 
-import pytest
-
 from application.use_cases import HomeState
 from presentation.dependencies import get_home_state_use_case
 from presentation.app import app

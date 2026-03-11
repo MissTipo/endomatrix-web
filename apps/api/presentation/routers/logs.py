@@ -12,7 +12,10 @@ background task (FastAPI BackgroundTasks or a job queue).
 
 from __future__ import annotations
 
+import logging
 from uuid import UUID
+
+logger = logging.getLogger(__name__)
 
 from fastapi import APIRouter, Depends, status
 
@@ -69,7 +72,11 @@ def submit_log(
         try:
             pattern_use_case.execute(GeneratePatternCommand(user_id=user_id))
         except Exception:
-            pass  # logged by the unhandled_error_handler if re-raised; swallowed here
+            logger.exception(
+                "Pattern generation failed for user %s after threshold crossed. "
+                "Log was saved. Insights will unlock on next successful generation.",
+                user_id,
+            )
 
     log = result.log
 

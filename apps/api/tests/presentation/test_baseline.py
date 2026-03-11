@@ -14,10 +14,7 @@ What we are testing:
 from __future__ import annotations
 
 import uuid
-from datetime import date, datetime
-from unittest.mock import MagicMock
-
-import pytest
+from datetime import date, datetime, timedelta
 
 from application.use_cases import (
     SetCycleBaselineResult,
@@ -44,15 +41,15 @@ def _make_baseline(
 ) -> CycleBaseline:
     return CycleBaseline(
         user_id=user_id or USER_ID,
-        last_period_start=date(2026, 2, 1),
+        last_period_start=date.today() - timedelta(days=38),
         average_cycle_length=average_cycle_length,
         is_irregular=is_irregular,
-        updated_at=datetime(2026, 2, 1, 12, 0, 0),
+        updated_at=datetime.utcnow(),
     )
 
 
 VALID_BODY = {
-    "last_period_start": "2026-02-01",
+    "last_period_start": (date.today() - timedelta(days=38)).isoformat(),
     "average_cycle_length": 28,
     "is_irregular": False,
 }
@@ -82,7 +79,7 @@ class TestSetBaseline:
         body = resp.json()
 
         assert body["user_id"] == str(USER_ID)
-        assert body["last_period_start"] == "2026-02-01"
+        assert body["last_period_start"] == (date.today() - timedelta(days=38)).isoformat()
         assert body["average_cycle_length"] == 28
         assert body["is_irregular"] is False
         assert "updated_at" in body
