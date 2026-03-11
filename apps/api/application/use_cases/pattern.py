@@ -22,7 +22,6 @@ from typing import Optional
 from uuid import UUID
 
 from application.base import Command, Result
-from application.use_cases.log_daily_entry import INSIGHT_UNLOCK_THRESHOLD
 from domain.engine.pattern_engine import PatternEngine, MIN_LOGS_FOR_PATTERN
 from domain.models.events import PatternGenerated
 from domain.models.pattern import PatternResult

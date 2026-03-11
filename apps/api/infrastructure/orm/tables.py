@@ -31,13 +31,13 @@ from sqlalchemy import (
     Column,
     DateTime,
     Float,
+    Index,
     Integer,
     MetaData,
     SmallInteger,
     String,
     Table,
     Text,
-    UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 
@@ -65,13 +65,19 @@ daily_logs = Table(
     Column("cycle_phase", String(16), nullable=False),      # CyclePhase enum value
     Column("created_at", DateTime, nullable=False),
     Column("is_active", Boolean, nullable=False, default=True, server_default="true"),
-    # Unique constraint: only one active log per user per date.
-    # The repository sets is_active=False on the old row before inserting the new one.
-    # We do not enforce uniqueness here at the DB level on (user_id, logged_date, is_active)
-    # because that would block having multiple superseded logs for the same date.
-    # The application layer enforces the "one active log per date" invariant.
-    UniqueConstraint("user_id", "logged_date", "is_active",
-                     name="uq_daily_logs_user_date_active"),
+)
+
+# Partial unique index: enforce at most one active log per user per date.
+# Using a partial index (WHERE is_active = true) rather than a full unique
+# constraint on (user_id, logged_date, is_active) so that multiple superseded
+# (is_active=false) rows can exist for the same user/date — preserving the
+# full audit trail across corrections.
+Index(
+    "uix_daily_logs_user_date_active",
+    daily_logs.c.user_id,
+    daily_logs.c.logged_date,
+    unique=True,
+    postgresql_where=(daily_logs.c.is_active == True),  # noqa: E712
 )
 
 

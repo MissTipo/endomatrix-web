@@ -11,14 +11,15 @@ Every use case follows the same shape:
 Commands are immutable. They represent a user's intent at a point in time.
 Results are immutable. They carry what the caller needs — nothing extra.
 
-Neither commands nor results contain domain models directly.
-They carry primitive types and IDs. The use case is responsible
-for loading domain models from ports and returning only what
-the caller needs to render a screen or respond to an API request.
+In general, commands and results carry primitive types and IDs. The use
+case is responsible for loading domain models from ports and returning
+only what the caller needs to render a screen or respond to an API request.
 
-The one exception is PatternResult and EarlyFeedback — these are
-rich domain outputs that the presentation layer renders directly.
-They are returned as-is rather than re-mapped to thin DTOs at this stage.
+Some result types intentionally return richer domain outputs that the
+presentation layer renders directly. PatternResult and EarlyFeedback are
+canonical examples — they are returned as-is rather than re-mapped to
+thin DTOs at this stage. SetCycleBaselineResult and LogDailyEntryResult
+also carry domain models directly for the same reason.
 """
 
 from dataclasses import dataclass

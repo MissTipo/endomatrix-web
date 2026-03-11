@@ -9,9 +9,10 @@ Supersession logic:
     before the new row is inserted. This preserves the audit trail while
     keeping the "one active log per date" invariant the domain requires.
 
-    The DB constraint uq_daily_logs_user_date_active does NOT enforce
-    this directly (see tables.py for the reason). The application layer
-    and this repository both enforce it — defence in depth.
+    The DB enforces this with a partial unique index on (user_id, logged_date)
+    WHERE is_active = true. This allows unlimited superseded (inactive) rows
+    for the same user/date while still blocking two active rows. The application
+    layer and this repository both enforce it — defence in depth.
 
 All methods return domain models, never SQLAlchemy Row objects.
 The translation happens in _row_to_domain().

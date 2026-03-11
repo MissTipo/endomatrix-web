@@ -10,13 +10,13 @@ To run integration tests locally:
     TEST_DATABASE_URL=postgresql+psycopg2://user:pass@localhost:5432/endomatrix_test \
     pytest tests/integration/ -v
 
-Each test gets a fresh database session and a clean schema. Tables are
-created before the test and dropped after, so tests are fully isolated
-from each other.
+At the start of the test session, all tables are created once against the
+test database. They are dropped again when the session finishes.
 
-The session is NOT committed between tests. Each test runs inside a
-transaction that is rolled back at teardown — much faster than
-recreating tables for every test.
+Each test gets its own database session but shares the session-scoped
+schema. The session is NOT committed between tests — each test runs
+inside its own transaction that is rolled back at teardown, providing
+isolation without recreating tables for every test.
 """
 
 import os
@@ -27,13 +27,6 @@ from sqlalchemy.orm import Session
 
 from infrastructure.database import create_test_engine
 from infrastructure.orm.tables import metadata
-
-from pathlib import Path
-try:
-    from dotenv import load_dotenv
-    load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
-except ImportError:
-    pass
 
 
 def _get_test_url() -> str | None:

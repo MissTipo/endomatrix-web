@@ -27,7 +27,6 @@ Serialization:
 from __future__ import annotations
 
 import dataclasses
-import json
 from datetime import date, datetime
 from typing import Any
 from uuid import UUID, uuid4

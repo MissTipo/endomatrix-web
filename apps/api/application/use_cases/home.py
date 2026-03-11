@@ -23,7 +23,7 @@ from uuid import UUID
 
 from application.base import Command, Result
 from domain.engine.pattern_engine import PatternEngine, MIN_LOGS_FOR_FEEDBACK
-from domain.engine.phase_calculator import PhaseCalculator, PhaseResult
+from domain.engine.phase_calculator import PhaseCalculator
 from domain.models.events import EarlyFeedbackGenerated
 from domain.models.pattern import EarlyFeedback
 from domain.ports import (
@@ -133,17 +133,23 @@ class GetHomeState:
         """
         Count consecutive days logged ending on today.
 
-        Walks backwards from today. Stops at the first missing day.
+        Fetches all active logs in a 90-day lookback window with a single
+        DB query, builds a set of logged dates, then walks backwards from
+        today. Stops at the first missing day.
+
         A streak of 0 means today has no log yet.
+        90 days is a practical ceiling — streaks longer than that are
+        extremely rare and the window can be widened if needed.
         """
         from datetime import timedelta
 
+        lookback_start = today - timedelta(days=90)
+        logs = self._log_repo.get_logs_in_range(user_id, lookback_start, today)
+        logged_dates = {log.logged_date for log in logs}
+
         streak = 0
         current = today
-
-        while True:
-            if not self._log_repo.has_log_for_date(user_id, current):
-                break
+        while current in logged_dates:
             streak += 1
             current = current - timedelta(days=1)
 

@@ -39,16 +39,22 @@ def upgrade() -> None:
         sa.Column("cycle_phase", sa.String(16), nullable=False),
         sa.Column("created_at", sa.DateTime, nullable=False),
         sa.Column("is_active", sa.Boolean, nullable=False, server_default="true"),
-        sa.UniqueConstraint(
-            "user_id", "logged_date", "is_active",
-            name="uq_daily_logs_user_date_active",
-        ),
     )
     op.create_index("ix_daily_logs_user_id", "daily_logs", ["user_id"])
     op.create_index(
         "ix_daily_logs_user_date",
         "daily_logs",
         ["user_id", "logged_date"],
+    )
+    # Partial unique index: at most one active log per user per date.
+    # Using WHERE is_active = true so that multiple superseded rows can
+    # coexist for the same user/date, preserving the full audit trail.
+    op.create_index(
+        "uix_daily_logs_user_date_active",
+        "daily_logs",
+        ["user_id", "logged_date"],
+        unique=True,
+        postgresql_where="is_active = true",
     )
 
     # ------------------------------------------------------------------
@@ -115,4 +121,7 @@ def downgrade() -> None:
     op.drop_table("early_feedback")
     op.drop_table("pattern_results")
     op.drop_table("cycle_baselines")
+    op.drop_index("uix_daily_logs_user_date_active", table_name="daily_logs")
+    op.drop_index("ix_daily_logs_user_date", table_name="daily_logs")
+    op.drop_index("ix_daily_logs_user_id", table_name="daily_logs")
     op.drop_table("daily_logs")

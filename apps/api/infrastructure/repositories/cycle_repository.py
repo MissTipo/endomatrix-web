@@ -1,7 +1,7 @@
 """
 infrastructure.repositories.cycle_repository
 
-PostgresCycleRepository — concrete IICycleRepository backed by PostgreSQL.
+PostgresCycleRepository — concrete ICycleRepository backed by PostgreSQL.
 
 One row per user. save() is an upsert — it replaces the existing row
 if one exists, or inserts a new one. This matches the domain invariant
