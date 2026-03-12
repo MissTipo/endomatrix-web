@@ -17,31 +17,32 @@ Users log three signals per day. The system learns their personal baseline, maps
 ## Screens
 
 ### 1. Onboarding
-*First open only. Under 2 minutes.*
+*First open only. Under 2 minutes. Three steps.*
 
-| Screen | What the user sees |
+| Step | What the user sees |
 |---|---|
-| Welcome | App name, one-line purpose, single CTA: Get started |
 | Intent | "What brings you here?" — one of four options: chronic menstrual pain, irregular cycles, severe PMS, just trying to understand my body |
-| Cycle baseline | Last period start date (date picker) + average cycle length (or "irregular / not sure") |
-| Expectation setting | "We won't diagnose you. We help you notice patterns you couldn't see before." — single continue button |
+| Tracker choice | Use EndoMatrix's built-in calendar, link an existing tracker (Flo, Clue, or Apple Health via HealthKit), or skip for now |
+| Cycle baseline | Last period start date (date picker) + average cycle length bucket, or "irregular / not sure" |
+
+The expectation is set once: "We won't diagnose you. We help you notice patterns you couldn't see before."
 
 The system infers cycle phase silently from this point forward. The user never selects a phase manually.
 
 ---
 
-### 2. Home
-*The screen you open every day.*
+### 2. Cycle Calendar
+*Period tracking and cycle overview.*
 
 | Element | Description |
 |---|---|
-| Phase indicator | Current inferred cycle phase shown at the top (e.g. "Luteal phase · Day 22") |
-| Log prompt | If today has no log: a single prompt card — "Log today · 10 seconds" |
-| Logged state | If today is already logged: a quiet confirmation showing the pain and energy values recorded |
-| Early feedback card | Appears from day 7 onward, one sentence only: e.g. "You tend to log higher pain around this point in your cycle." Refreshes every 5–7 days. |
-| Streak indicator | A subtle count of consecutive days logged. Motivation without pressure. |
-
-No charts. No summaries. Nothing that competes with the habit of logging.
+| Month grid | Monday-start. Tap any day to mark or unmark it as a period day. |
+| Period days | Shown as filled white circles against the gradient header. |
+| Predicted days | Next period window shown with a dashed ring, derived from last period start and average cycle length. |
+| High-pain window | Days 18–22 shown with a subtle dot from day one, based on typical luteal phase averages. Replaced by personal pattern data once enough logs exist. |
+| Flow logger | Appears when today is marked as a period day: Spotting / Light / Medium / Heavy. |
+| Cycle stats strip | Cycle length, period length, predicted next period date. |
+| Phase strip | Four phases shown as a compact row — current phase highlighted in purple. |
 
 ---
 
@@ -50,10 +51,11 @@ No charts. No summaries. Nothing that competes with the habit of logging.
 
 | Input | Type | Detail |
 |---|---|---|
-| Pain today | Slider 0–10 | Neutral label, no emoji |
-| Energy level | Slider 0–10 | Neutral label, no emoji |
-| Dominant symptom | Single-select dropdown | Pelvic pain, lower back pain, leg pain, bloating, nausea, headache, acne flare, mood crash, brain fog, insomnia, other |
-| Log button | Full-width CTA | "Log today" |
+| Pain today | Slider 0–10 | Rose gradient. Value shown in serif at top right. |
+| Energy level | Slider 0–10 | Purple gradient. Same treatment. |
+| Flow today | Segmented: Spotting / Light / Medium / Heavy | Shown only on days marked as period days in the calendar. |
+| Dominant symptom | Chip grid (single-select) | Pelvic pain, lower back pain, leg pain, bloating, nausea, headache, acne flare, mood crash, brain fog, insomnia, other. |
+| Log button | Full-width CTA | "Log today" — disabled until a symptom is selected. |
 
 After logging: "Saved. See you tomorrow." Nothing else.
 
@@ -61,18 +63,18 @@ Cycle day and phase are attached to the log silently by the system.
 
 ---
 
-### 4. History
-*A calendar view of every logged day.*
+### 4. Home
+*The screen you open every day.*
 
 | Element | Description |
 |---|---|
-| Monthly calendar | Each day shows a colored intensity dot based on pain level: light to deep |
-| Day tap | Tapping any logged day opens a small card showing the pain score, energy score, and dominant symptom recorded |
-| Empty days | Days with no log shown as empty circles — no guilt, no streak-breaking language |
-| Month navigation | Swipe or arrow to move between months |
-| Phase banding | Subtle background color bands on the calendar showing inferred cycle phases across the month |
+| Gradient header | Current cycle day and phase shown at top. Streak and logs-until-insights counters. |
+| Log prompt | If today has no log: a tappable card — "Log today's symptoms →" |
+| Logged state | If today is already logged: a quiet rose-tinted confirmation with pain and energy values. |
+| Early feedback card | Appears from day 7 onward, one sentence only: e.g. "You tend to log higher pain around this point in your cycle." Generated by the API. |
+| Phase context card | A short, plain-language description of the current phase and what to expect. |
 
-This screen gives users a visual sense of the shape of their month before the 30-day insight unlocks.
+No charts. No summaries. Nothing that competes with the habit of logging.
 
 ---
 
@@ -81,53 +83,31 @@ This screen gives users a visual sense of the shape of their month before the 30
 
 **Before unlock — teaser state:**
 
-A preview of the insight page with all content blurred or masked. Overlaid with:
-- A progress indicator: "Day 14 of 30 — keep logging to unlock your pattern"
-- Three masked section titles visible through the blur: "When symptoms begin", "How severity changes", "What travels together"
-- A single line: "Your pattern is forming. Check back after 30 days."
-
-The teaser communicates what is coming without fabricating data.
+An empty state showing days remaining and a plain description of what the insight page will contain once unlocked. No fabricated data, no blurred previews.
 
 **After unlock — full insight page:**
 
 | Section | Content |
 |---|---|
-| When symptoms begin | Which cycle days your symptoms typically start, shown as a range not a single day |
-| How severity changes | How quickly pain and energy shift from onset — gradual or sharp |
-| What travels together | Which symptoms cluster: e.g. "mood crash and brain fog appear together on your highest-pain days" |
-| Trend over time | Whether the logged period shows stable, variable, or escalating severity |
-| What to expect | Soft predictive framing for the next cycle: "Based on your pattern, days 20–25 may be your most symptomatic" |
+| When symptoms begin | Which cycle days symptoms typically start, shown as a range. |
+| How severity changes | Bar chart showing pain intensity across the luteal phase. Trend label: escalating, improving, stable, variable. |
+| What travels together | Top symptom cluster — which symptoms appear together on high-pain days. |
+| What to try next cycle | Soft guidance list: schedule rest, lighter workloads, preparation notes. |
+| Export | "Export for clinician →" — triggers print dialog (PDF). User controls if and when this is shared. |
 
-All language uses qualifiers: "so far", "based on your data", "this may change as we learn more."
-
----
-
-### 6. Export
-*Available after the first insight unlocks.*
-
-A single clean page summarising the insight in a format designed for clinical conversations.
-
-| Element | Description |
-|---|---|
-| Summary header | Date range, number of cycles logged, cycle length average |
-| Symptom timeline | A clean visual showing when in the cycle symptoms typically appear |
-| Severity pattern | Pain and energy averages by phase |
-| Dominant symptoms by phase | Which symptoms appeared most in each phase |
-| Escalation note | Whether severity increased, decreased, or held steady across the logged period |
-| Export options | Download as PDF or share as image |
-
-The user controls if and when this is shared. Nothing is sent anywhere automatically.
+All language uses qualifiers: "so far", "based on your data", "may change as we learn more."
 
 ---
 
-### 7. Settings
-*Utility screen.*
+### 6. Settings
+*Not yet implemented.*
 
 | Option | Description |
 |---|---|
 | Daily reminder | Toggle on/off, set preferred time |
 | Cycle info | Edit last period date and average cycle length |
-| Account | Email, change password, delete account |
+| Tracker connection | Connect or disconnect Flo, Clue, or Apple Health |
+| Account | Email, sign out, delete account |
 | Privacy | View what data is stored, request full export, delete all data |
 | About | Version, non-diagnostic disclaimer, link to endomatrixlabs.tech |
 
@@ -144,11 +124,12 @@ The user controls if and when this is shared. Nothing is sent anywhere automatic
 - Cycle comparison: this cycle versus the previous cycle, side by side, same phase windows
 
 **History calendar gains:**
-- Mood overlaid as a secondary dot color alongside pain intensity
+- Pain intensity dot per day (light to deep color based on pain level)
+- Tap a day to see the full log entry for that day
 
 **Wearable data (optional, user-initiated):**
 - Resting heart rate, HRV, skin temperature, sleep duration ingested as supplementary signals
-- Shown in the Insights page as supporting context alongside logged data
+- Shown in Insights as supporting context alongside logged data
 - Never the primary signal — the daily log always anchors the pattern
 
 ---
@@ -157,7 +138,7 @@ The user controls if and when this is shared. Nothing is sent anywhere automatic
 *Not in scope until MVP is validated.*
 
 - SMS/USSD interface for low-connectivity access
-- Clinician export with structured symptom timeline format
+- Clinician export with structured symptom timeline
 - Perimenopause and menopause logging cohort
 - Population analytics layer — EndoMatrix Sentinel
 
@@ -170,17 +151,67 @@ Hexagonal architecture (ports and adapters). The domain layer has zero framework
 ```
 endomatrix/
 ├── apps/
-│   ├── web/                    ← Next.js PWA (TypeScript)
-│   └── api/                    ← FastAPI (Python)
-│       ├── domain/             ← Pure Python. No FastAPI. No SQLAlchemy.
-│       │   ├── models/         ← DailyLog, CyclePhase, Symptom, PatternResult
-│       │   ├── services/       ← PatternEngine, PhaseCalculator (pure functions)
-│       │   └── ports/          ← ILogRepository, IPatternStore (ABCs)
-│       ├── application/        ← Use cases: LogDailyEntry, GetPatternSummary
-│       ├── infrastructure/     ← SQLAlchemy models, Alembic migrations, repo implementations
-│       └── presentation/       ← FastAPI routers, Pydantic schemas, middleware
-└── packages/
-    └── shared-types/           ← TypeScript types generated from FastAPI OpenAPI schema
+│   ├── api/                          ← FastAPI (Python 3.11)
+│   │   ├── domain/                   ← Pure Python. No FastAPI. No SQLAlchemy.
+│   │   │   ├── models/               ← DailyLog, CycleBaseline, Symptom, PatternResult, events
+│   │   │   ├── engine/               ← PatternEngine, PhaseCalculator (pure functions)
+│   │   │   └── ports/                ← ILogRepository, ICycleRepository, IPatternRepository (ABCs)
+│   │   ├── application/              ← Use cases
+│   │   │   └── use_cases/            ← LogDailyEntry, SetCycleBaseline, GeneratePattern,
+│   │   │                                GetHomeState, GenerateEarlyFeedback
+│   │   ├── infrastructure/           ← Framework-facing
+│   │   │   ├── orm/tables.py         ← SQLAlchemy table definitions
+│   │   │   ├── repositories/         ← PostgresLogRepository, PostgresCycleRepository,
+│   │   │   │                            PostgresPatternRepository
+│   │   │   └── events/publisher.py   ← DatabaseEventPublisher
+│   │   ├── presentation/             ← FastAPI layer
+│   │   │   ├── app.py                ← App factory, exception handlers
+│   │   │   ├── dependencies.py       ← DI wiring
+│   │   │   ├── schemas/              ← Pydantic request/response schemas
+│   │   │   └── routers/              ← /baseline, /logs, /home, /insights
+│   │   ├── alembic/                  ← Migrations
+│   │   │   └── versions/0001_initial_schema.py
+│   │   └── tests/
+│   │       ├── fakes.py              ← In-memory repository fakes
+│   │       ├── domain/               ← Domain model tests
+│   │       ├── engine/               ← PatternEngine + PhaseCalculator tests
+│   │       ├── ports/                ← Port contract tests
+│   │       ├── application/          ← Use case tests
+│   │       ├── integration/          ← Postgres repository tests (requires TEST_DATABASE_URL)
+│   │       └── presentation/         ← Router tests (63/63 passing)
+│   │
+│   └── web/                          ← Next.js 15 PWA (TypeScript)
+│       ├── public/manifest.json      ← PWA manifest
+│       └── src/
+│           ├── middleware.ts          ← Clerk auth guard
+│           ├── lib/
+│           │   ├── theme.ts           ← Design tokens, palette, phase constants
+│           │   ├── types.ts           ← Shared TypeScript types (aligned with API schemas)
+│           │   └── api.ts             ← Fetch wrapper for all API calls
+│           ├── components/
+│           │   ├── ui/               ← Card, SectionLabel, GradientHeader, StatCard,
+│           │   │                        FlowButton, SymptomChip, NavBar
+│           │   └── calendar/         ← MonthCalendar, PhaseStrip
+│           └── app/
+│               ├── layout.tsx         ← Root layout with ClerkProvider
+│               ├── globals.css        ← Reset, slider styles, shared utility classes
+│               ├── (auth)/
+│               │   └── sign-in/      ← Clerk magic-link sign-in page
+│               └── (app)/            ← Authenticated route group
+│                   ├── layout.tsx    ← App shell with NavBar
+│                   ├── onboarding/   ← 3-step onboarding flow
+│                   ├── calendar/     ← Period tracking calendar
+│                   ├── log/          ← Daily symptom log
+│                   ├── home/         ← Home screen (server + client split)
+│                   └── insights/     ← Pattern summary (server + client split)
+│
+├── packages/
+│   └── shared-types/                 ← TypeScript types generated from FastAPI OpenAPI schema
+│
+├── docker-compose.yml                ← db (5432) + db_test (5433, tmpfs)
+├── cloudbuild.yaml                   ← GCP Cloud Build: build → push → migrate → deploy
+├── Makefile                          ← Dev commands: up, migrate, test, lint, fmt
+└── .env.example
 ```
 
 ---
@@ -189,15 +220,68 @@ endomatrix/
 
 | Layer | Technology |
 |---|---|
-| Frontend | Next.js + TypeScript + Tailwind |
-| Backend | FastAPI (Python) |
+| Frontend | Next.js 15 + TypeScript (App Router, PWA) |
+| Styling | CSS classes + inline design tokens (no Tailwind) |
+| Backend | FastAPI (Python 3.11) |
 | Database | PostgreSQL |
 | ORM / Migrations | SQLAlchemy + Alembic |
-| Auth | Clerk |
-| Deployment | GCP Cloud Run (API) + Vercel (web) |
+| Auth | Clerk (magic link email) |
+| Deployment | GCP Cloud Run (API, `africa-south1`) + Vercel (web) |
+| CI/CD | GCP Cloud Build |
 | Secrets | GCP Secret Manager |
 | Observability | Prometheus + Grafana + Loki |
 | Shared types | openapi-typescript (generated from FastAPI schema) |
+
+---
+
+## Running locally
+
+```bash
+# Start Postgres (main + test)
+make up
+
+# Run API migrations
+make migrate
+
+# Start the API
+make run
+
+# Start the web app
+cd apps/web
+cp .env.example .env.local   # fill in Clerk keys + NEXT_PUBLIC_API_URL
+npm install
+npm run dev
+```
+
+**Environment variables required:**
+
+`apps/api/.env`:
+```
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/endomatrix
+TEST_DATABASE_URL=postgresql://postgres:postgres@localhost:5433/endomatrix_test
+```
+
+`apps/web/.env.local`:
+```
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/home
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/onboarding
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+---
+
+## Testing
+
+```bash
+make test          # presentation + domain + engine (no DB required)
+make integration   # repository tests (requires make up + make migrate-test)
+make test-all      # everything
+```
+
+Current: **63/63 presentation tests passing.** Integration tests ready — require a running Postgres instance.
 
 ---
 
@@ -206,8 +290,8 @@ endomatrix/
 - **Audit log**: every mutation to health data writes an immutable append-only event to `audit_events` — ships from day one, not a later addition
 - **Data minimisation**: the daily log captures only what pattern detection requires
 - **No third-party data sharing**: user-level data never leaves the platform
-- **Consent**: explicit, versioned, checked before every data write
-- **User data export and deletion**: available from settings at any time
+- **Supersession**: re-logging a day soft-deletes the previous entry (`is_active = false`) rather than overwriting it — the record is preserved in the audit trail
+- **User data export and deletion**: available from Settings
 
 ---
 
@@ -215,14 +299,25 @@ endomatrix/
 
 | Milestone | Status |
 |---|---|
-| Architecture and domain design | In progress |
-| Onboarding | Not started |
-| Daily log | Not started |
-| Home screen + early reinforcement | Not started |
-| History calendar | Not started |
-| Insights teaser + 30-day summary | Not started |
-| Export / share | Not started |
-| MVP: mood + notes + cycle comparison | Not started |
+| Architecture and domain design | Complete |
+| Domain models + PatternEngine + PhaseCalculator | Complete |
+| Application use cases | Complete |
+| Infrastructure (PostgreSQL repos, Alembic, Docker) | Complete |
+| Presentation layer (FastAPI routers + Pydantic schemas) | Complete |
+| Presentation tests (63/63) | Complete |
+| Integration tests | Complete (requires live Postgres to run) |
+| GCP Cloud Build + Cloud Run config | Complete |
+| Web: design tokens + shared types + API client | Complete |
+| Web: Clerk auth + middleware | Complete |
+| Web: Onboarding (3-step flow) | Complete |
+| Web: Cycle calendar | Complete |
+| Web: Daily log | Complete |
+| Web: Home screen | Complete |
+| Web: Insights (teaser + summary) | Complete |
+| Web: Settings screen | Not started |
+| Web: History calendar (pain dots + day tap) | Not started |
+| Web: Export (PDF / share) | Not started |
+| MVP: mood slider + notes | Not started |
 | MVP: wearable ingestion | Not started |
 | Beta (50 users) | Targeted Q1 2026 |
 
